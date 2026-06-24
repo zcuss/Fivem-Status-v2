@@ -3,24 +3,29 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import type { SessionData } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Fivem-Status Dashboard",
   description: "FiveM server management dashboard",
 };
 
 async function getSession(): Promise<SessionData | null> {
-  const cookieStore = await cookies();
-  const raw = cookieStore.get("fivem_session")?.value;
-  if (!raw) return null;
-
   try {
-    const [base64] = raw.split(".");
-    if (!base64) return null;
-    const json = Buffer.from(base64, "base64url").toString("utf-8");
-    const session = JSON.parse(json) as SessionData;
-    // Basic expiry check
-    if (Date.now() - session.iat > 7 * 24 * 60 * 60 * 1000) return null;
-    return session;
+    const cookieStore = await cookies();
+    const raw = cookieStore.get("fivem_session")?.value;
+    if (!raw) return null;
+
+    try {
+      const [base64] = raw.split(".");
+      if (!base64) return null;
+      const json = Buffer.from(base64, "base64url").toString("utf-8");
+      const session = JSON.parse(json) as SessionData;
+      if (Date.now() - session.iat > 7 * 24 * 60 * 60 * 1000) return null;
+      return session;
+    } catch {
+      return null;
+    }
   } catch {
     return null;
   }

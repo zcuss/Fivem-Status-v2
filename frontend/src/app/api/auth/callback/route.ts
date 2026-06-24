@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "node:crypto";
+import { createHmac } from "crypto";
 import { resolveRole, upsertUserRole } from "@/lib/auth";
 import type { SessionData, DiscordGuild } from "@/lib/auth";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const DISCORD_API = "https://discord.com/api/v10";
 
@@ -110,27 +113,22 @@ export async function GET(req: NextRequest) {
       iat: Date.now(),
     };
 
-    const res = NextResponse.redirect(new URL("/dashboard", req.url));
-
-    // Set session cookie using Next.js cookies API
+    // Set cookie + redirect via HTML (Set-Cookie headers get stripped on redirects in edge)
     const encoded = (() => {
       const json = JSON.stringify(session);
       const b64 = Buffer.from(json).toString("base64url");
       const sig = createHmac("sha256", process.env.SESSION_SECRET || "").update(b64).digest("hex");
       return `${b64}.${sig}`;
     })();
-    res.cookies.set("fivem_session", encoded, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-      secure: true,
-    });
 
-    // Clear OAuth state cookie
-    res.cookies.set("oauth_state", "", { maxAge: 0, path: "/" });
-
-    return res;
+    const html = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=/dashboard"></head><body></body></html>`;
+    const response = new NextResponse(html, { status: 200, headers: { "Content-Type": "text/html" } });
+    response.headers.append(
+      "Set-Cookie",
+      `fivem_session=${encoded}; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=${60 * 60 * 24 * 7}`
+    );
+    response.headers.append("Set-Cookie", "oauth_state=; Path=/; Max-Age=0");
+    return response;
   } catch (err) {
     console.error("Discord OAuth callback error:", err);
     return NextResponse.redirect(new URL("/?error=callback_exception", req.url));

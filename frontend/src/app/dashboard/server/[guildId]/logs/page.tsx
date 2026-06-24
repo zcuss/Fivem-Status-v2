@@ -26,7 +26,7 @@ const PAGE_SIZE = 20;
 
 export default function LogsPage() {
   const params = useParams();
-  const guildId = params.guildId as string;
+  const guildId = (params?.guildId as string) ?? "";
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [logType, setLogType] = useState<LogType>("commands");

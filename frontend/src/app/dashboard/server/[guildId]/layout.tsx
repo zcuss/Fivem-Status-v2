@@ -23,7 +23,7 @@ export default function ServerLayout({
 }) {
   const params = useParams();
   const pathname = usePathname();
-  const guildId = params.guildId as string;
+  const guildId = (params?.guildId as string) ?? "";
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] gap-0 -mx-4 -mt-6">
@@ -38,7 +38,7 @@ export default function ServerLayout({
         <nav className="space-y-1">
           {sidebarItems.map((item) => {
             const fullHref = `/dashboard/server/${guildId}/${item.href}`;
-            const isActive = pathname.startsWith(fullHref);
+            const isActive = (pathname ?? "").startsWith(fullHref);
             return (
               <Link
                 key={item.href}

@@ -20,7 +20,7 @@ interface ServerInfo {
 
 export default function PublicStatusPage() {
   const params = useParams();
-  const guildId = params.guildId as string;
+  const guildId = (params?.guildId as string) ?? "";
   const [server, setServer] = useState<ServerInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

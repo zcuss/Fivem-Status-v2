@@ -40,7 +40,7 @@ const priorityColors: Record<TaskPriority, string> = {
 
 export default function TasksPage() {
   const params = useParams();
-  const guildId = params.guildId as string;
+  const guildId = (params?.guildId as string) ?? "";
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

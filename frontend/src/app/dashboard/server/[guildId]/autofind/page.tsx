@@ -22,7 +22,7 @@ interface AutoFindEntry {
 
 export default function AutoFindPage() {
   const params = useParams();
-  const guildId = params.guildId as string;
+  const guildId = (params?.guildId as string) ?? "";
   const [entries, setEntries] = useState<AutoFindEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

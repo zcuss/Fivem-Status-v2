@@ -24,7 +24,7 @@ interface RanksConfig {
 
 export default function RanksPage() {
   const params = useParams();
-  const guildId = params.guildId as string;
+  const guildId = (params?.guildId as string) ?? "";
   const [ranksConfig, setRanksConfig] = useState<RanksConfig>({ ranks: [] });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

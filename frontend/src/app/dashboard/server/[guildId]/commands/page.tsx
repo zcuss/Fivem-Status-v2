@@ -20,7 +20,7 @@ interface BotCommand {
 
 export default function CommandsPage() {
   const params = useParams();
-  const guildId = params.guildId as string;
+  const guildId = (params?.guildId as string) ?? "";
   const [commands, setCommands] = useState<BotCommand[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

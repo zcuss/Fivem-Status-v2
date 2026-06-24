@@ -27,7 +27,7 @@ interface ServerSettings {
 
 export default function ServerSettingsPage() {
   const params = useParams();
-  const guildId = params.guildId as string;
+  const guildId = (params?.guildId as string) ?? "";
   const [settings, setSettings] = useState<ServerSettings>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);

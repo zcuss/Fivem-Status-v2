@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-border: #262626;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: #030712;
+    color: white;
+  }
+}

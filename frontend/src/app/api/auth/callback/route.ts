@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { setSessionCookie, resolveRole, upsertUserRole } from "@/lib/auth";
+import { createHmac } from "node:crypto";
+import { resolveRole, upsertUserRole } from "@/lib/auth";
 import type { SessionData, DiscordGuild } from "@/lib/auth";
 
 const DISCORD_API = "https://discord.com/api/v10";
@@ -110,7 +111,21 @@ export async function GET(req: NextRequest) {
     };
 
     const res = NextResponse.redirect(new URL("/dashboard", req.url));
-    res.headers.append("Set-Cookie", setSessionCookie(session));
+
+    // Set session cookie using Next.js cookies API
+    const encoded = (() => {
+      const json = JSON.stringify(session);
+      const b64 = Buffer.from(json).toString("base64url");
+      const sig = createHmac("sha256", process.env.SESSION_SECRET || "").update(b64).digest("hex");
+      return `${b64}.${sig}`;
+    })();
+    res.cookies.set("fivem_session", encoded, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+      secure: true,
+    });
 
     // Clear OAuth state cookie
     res.cookies.set("oauth_state", "", { maxAge: 0, path: "/" });

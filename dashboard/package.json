@@ -8,17 +8,18 @@
     "start": "next start -p 34001"
   },
   "dependencies": {
-    "next": "^15.3.3",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "@fivem/shared": "workspace:*",
     "@fivem/db": "workspace:*",
-    "tailwindcss": "^4.1.8",
+    "@fivem/shared": "workspace:*",
     "@tailwindcss/postcss": "^4.1.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "iron-session": "^8.0.4",
+    "lucide-react": "^0.511.0",
+    "next": "^15.3.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "tailwind-merge": "^3.3.0",
-    "lucide-react": "^0.511.0"
+    "tailwindcss": "^4.1.8"
   },
   "devDependencies": {
     "@types/react": "^19.1.4",

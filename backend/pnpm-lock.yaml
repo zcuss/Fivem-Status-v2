@@ -10,6 +10,9 @@ importers:
 
   packages/api:
     dependencies:
+      '@fivem/bot':
+        specifier: workspace:*
+        version: link:../bot
       '@fivem/db':
         specifier: workspace:*
         version: link:../db

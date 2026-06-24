@@ -3,6 +3,10 @@
   "version": "2.0.0",
   "type": "module",
   "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./manager": "./dist/manager.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

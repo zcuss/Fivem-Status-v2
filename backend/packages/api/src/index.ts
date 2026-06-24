@@ -7,6 +7,7 @@ import botRoutes from "./routes/bots.js";
 import serverRoutes from "./routes/servers.js";
 import userRoutes from "./routes/users.js";
 import logRoutes from "./routes/logs.js";
+import { startBotManager, stopBotManager } from "@fivem/bot/manager";
 
 const app = new Hono();
 
@@ -45,4 +46,20 @@ const port = Number(process.env.API_PORT || 34002);
 
 serve({ fetch: app.fetch, port }, (info) => {
   console.log(`[API] Listening on http://localhost:${info.port}`);
+});
+
+// Start bot manager
+const clusterId = process.env.CLUSTER_ID || "default";
+startBotManager({ clusterId }).catch((err) => {
+  console.error("[BOT] Fatal:", err);
+});
+
+process.on("SIGINT", async () => {
+  await stopBotManager();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  await stopBotManager();
+  process.exit(0);
 });

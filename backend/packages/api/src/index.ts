@@ -27,14 +27,14 @@ app.route("/api/logs", logRoutes);
 app.get("/api/stats", async (c) => {
   // Delegate to the same stats handler
   const { db } = await import("@fivem/db");
-  const [[{ botCount }]]: any = await db.execute("SELECT COUNT(*) AS botCount FROM bot_configs");
-  const [[{ serverCount }]]: any = await db.execute("SELECT COUNT(*) AS serverCount FROM server_configs");
-  const [[{ userCount }]]: any = await db.execute("SELECT COUNT(*) AS userCount FROM user_roles");
-  const [[{ commandCount }]]: any = await db.execute("SELECT COUNT(*) AS commandCount FROM command_logs");
+  const [[{ botcount }]]: any = await db.execute("SELECT COUNT(*) AS botcount FROM bot_configs");
+  const [[{ servercount }]]: any = await db.execute("SELECT COUNT(*) AS servercount FROM server_configs");
+  const [[{ usercount }]]: any = await db.execute("SELECT COUNT(*) AS usercount FROM user_roles");
+  const [[{ commandcount }]]: any = await db.execute("SELECT COUNT(*) AS commandcount FROM command_logs");
 
   return c.json({
     ok: true,
-    data: { bots: botCount, servers: serverCount, users: userCount, commands: commandCount },
+    data: { bots: botcount, servers: servercount, users: usercount, commands: commandcount },
   });
 });
 

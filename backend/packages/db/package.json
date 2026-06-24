@@ -15,8 +15,8 @@
     "dev": "tsc --watch",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
-    "push": "drizzle-kit push",
-    "studio": "drizzle-kit studio"
+    "push": "drizzle-kit push --config=../../drizzle.config.ts",
+    "studio": "drizzle-kit studio --config=../../drizzle.config.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.0",

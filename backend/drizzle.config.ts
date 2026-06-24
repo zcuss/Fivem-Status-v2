@@ -1,6 +1,7 @@
 import { defineConfig } from "drizzle-kit";
 
 const DB_TYPE = process.env.DB_TYPE || "mysql";
+const isPg = DB_TYPE === "postgres" || DB_TYPE === "cockroach";
 
 function getAdapter() {
   switch (DB_TYPE) {
@@ -15,7 +16,9 @@ function getAdapter() {
 }
 
 export default defineConfig({
-  schema: "./packages/db/src/schema.ts",
+  schema: isPg
+    ? "/root/project/fivem-status/backend/packages/db/src/schema-pg.ts"
+    : "/root/project/fivem-status/backend/packages/db/src/schema.ts",
   out: "./drizzle",
   dialect: getAdapter().kind,
   dbCredentials: {

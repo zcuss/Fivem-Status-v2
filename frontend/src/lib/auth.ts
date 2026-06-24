@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { db } from "@fivem/db";
 import crypto from "crypto";
 import type { SessionData, DiscordGuild } from "./types";
 export type { SessionData, DiscordGuild };
@@ -170,37 +169,14 @@ export async function upsertUserRole(
   globalName: string | null,
   resolvedRole: "user" | "admin" | "dev"
 ): Promise<void> {
-  // Check existing
-  const [rows] = await db.execute(
-    "SELECT role FROM user_roles WHERE discord_id = ?",
-    [discordId]
-  );
-  const existing = (rows as any[])[0];
-
-  const roleHierarchy: Record<string, number> = {
-    user: 0,
-    admin: 1,
-    dev: 2,
-  };
-
-  // Keep higher role
-  const finalRole =
-    existing && roleHierarchy[existing.role] >= roleHierarchy[resolvedRole]
-      ? existing.role
-      : resolvedRole;
-
-  if (existing) {
-    await db.execute(
-      `UPDATE user_roles 
-       SET role = ?, discord_username = ?, discord_name = ?, last_login_at = NOW()
-       WHERE discord_id = ?`,
-      [finalRole, username, globalName, discordId]
-    );
-  } else {
-    await db.execute(
-      `INSERT INTO user_roles (discord_id, role, max_auto, discord_username, discord_name, last_login_at)
-       VALUES (?, ?, 1, ?, ?, NOW())`,
-      [discordId, finalRole, username, globalName]
-    );
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:34002";
+  try {
+    await fetch(`${apiUrl}/api/users/${discordId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: resolvedRole, discord_username: username, discord_name: globalName }),
+    });
+  } catch {
+    // API may not be running during dev — ignore
   }
 }

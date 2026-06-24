@@ -1,0 +1,16 @@
+{
+  "name": "fivem-status-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm --filter './packages/**' build",
+    "dev:api": "pnpm --filter @fivem/api dev",
+    "dev:bot": "pnpm --filter @fivem/bot dev",
+    "start:api": "pnpm --filter @fivem/api start",
+    "start:bot": "pnpm --filter @fivem/bot start",
+    "start:selfbot": "pnpm --filter @fivem/selfbot start"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3", "esbuild", "sharp"]
+  }
+}

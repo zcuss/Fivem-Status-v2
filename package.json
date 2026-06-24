@@ -2,24 +2,10 @@
   "name": "fivem-status",
   "version": "2.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "build": "pnpm -r build",
-    "dev": "pnpm -r --parallel dev",
-    "dev:dashboard": "pnpm --filter @fivem/dashboard dev",
-    "dev:api": "pnpm --filter @fivem/api dev",
-    "dev:bot": "pnpm --filter @fivem/bot dev",
-    "dev:selfbot": "pnpm --filter @fivem/selfbot dev",
-    "start:bot": "pnpm --filter @fivem/bot start",
-    "start:api": "pnpm --filter @fivem/api start",
-    "start:dashboard": "pnpm --filter @fivem/dashboard start",
-    "start:selfbot": "pnpm --filter @fivem/selfbot start",
-    "db:generate": "pnpm --filter @fivem/db generate",
-    "db:migrate": "pnpm --filter @fivem/db migrate",
-    "db:push": "pnpm --filter @fivem/db push",
-    "db:studio": "pnpm --filter @fivem/db studio",
-    "lint": "pnpm -r lint",
-    "clean": "pnpm -r exec rm -rf dist .next node_modules/.cache"
+    "setup": "cd backend && pnpm install && pnpm build && cd ../frontend && pnpm install && pnpm build",
+    "start:backend": "cd backend && pnpm start:api",
+    "start:frontend": "cd frontend && pnpm start"
   },
   "engines": {
     "node": ">=20"

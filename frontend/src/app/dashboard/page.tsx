@@ -7,10 +7,9 @@ import {
 } from "@/components/ui/card";
 
 async function getStats() {
+  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:34002";
   try {
-    const res = await fetch("http://localhost:34002/api/stats", {
-      cache: "no-store",
-    });
+    const res = await fetch(`${API}/api/stats`, { cache: "no-store" });
     if (!res.ok) return null;
     const data = await res.json();
     return data.data;

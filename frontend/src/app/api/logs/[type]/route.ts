@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND = 'http://localhost:34002';
+const BACKEND = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:34002';
 
 const VALID_TYPES = ['commands', 'bot', 'console'];
 

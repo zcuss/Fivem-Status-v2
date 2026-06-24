@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Plus, RefreshCw, Trash2, Globe } from 'lucide-react';
 
-const API_BASE = 'http://localhost:34002';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:34002';
 
 interface ServerInfo {
   id: string;

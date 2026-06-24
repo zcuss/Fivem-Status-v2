@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND = 'http://localhost:34002';
+const BACKEND = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:34002';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ discordId: string }> }) {
   const { discordId } = await params;

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Crown, Check, Zap, Building2, RefreshCw } from 'lucide-react';
 
-const API_BASE = 'http://localhost:34002';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:34002';
 
 interface PlanInfo {
   name: string;

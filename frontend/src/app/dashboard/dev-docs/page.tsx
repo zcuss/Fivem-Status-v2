@@ -26,7 +26,7 @@ function DocContent({ section }: { section: DocSection }) {
           </p>
           <h4 className="text-lg font-semibold text-white mt-6">Architecture</h4>
           <ul className="list-disc list-inside text-gray-300 space-y-1">
-            <li><strong>Backend API</strong> — Node.js/Express server at <code className="rounded bg-gray-800 px-1.5 py-0.5 text-sm text-green-400">localhost:34002</code></li>
+            <li><strong>Backend API</strong> — Node.js/Express server at <code className="rounded bg-gray-800 px-1.5 py-0.5 text-sm text-green-400">api.finder.zcus.dev</code></li>
             <li><strong>Dashboard</strong> — Next.js frontend (this app)</li>
             <li><strong>Bot Runner</strong> — Child process manager for Discord/TS3 bots</li>
             <li><strong>Database</strong> — SQLite via <code className="rounded bg-gray-800 px-1.5 py-0.5 text-sm text-green-400">@fivem/db</code></li>

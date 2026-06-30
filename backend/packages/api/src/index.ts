@@ -7,7 +7,9 @@ import botRoutes from "./routes/bots.js";
 import serverRoutes from "./routes/servers.js";
 import userRoutes from "./routes/users.js";
 import logRoutes from "./routes/logs.js";
-import { startBotManager, stopBotManager } from "@fivem/bot/manager";
+import { stopBotManager } from "@fivem/bot/manager";
+
+// NOTE: Bot manager runs in separate process (packages/bot), not here.
 
 const app = new Hono();
 
@@ -24,6 +26,23 @@ app.route("/api/servers", serverRoutes);
 app.route("/api/users", userRoutes);
 app.route("/api/logs", logRoutes);
 
+// GET /api/user-guilds — guilds the bot is in (with full details for dashboard)
+app.get("/api/user-guilds", async (c) => {
+  const token = process.env.DISCORD_TOKEN;
+  if (!token) return c.json({ ok: false, error: "No DISCORD_TOKEN" }, 500);
+
+  try {
+    const res = await fetch("https://discord.com/api/v10/users/@me/guilds", {
+      headers: { Authorization: `Bot ${token}` },
+    });
+    if (!res.ok) return c.json({ ok: false, error: `Discord API ${res.status}` }, 502);
+    const guilds = await res.json();
+    return c.json({ ok: true, guilds });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message }, 500);
+  }
+});
+
 // GET /api/stats (mounted separately since stats is under /api/logs but also standalone)
 app.get("/api/stats", async (c) => {
   // Delegate to the same stats handler
@@ -39,6 +58,23 @@ app.get("/api/stats", async (c) => {
   });
 });
 
+// GET /api/bot-guilds — list guilds the bot is in
+app.get("/api/bot-guilds", async (c) => {
+  const token = process.env.DISCORD_TOKEN;
+  if (!token) return c.json({ ok: false, error: "No DISCORD_TOKEN" }, 500);
+  try {
+    const res = await fetch("https://discord.com/api/v10/users/@me/guilds", {
+      headers: { Authorization: `Bot ${token}` },
+    });
+    if (!res.ok) return c.json({ ok: false, error: `Discord ${res.status}` }, 502);
+    const guilds = await res.json();
+    const guildIds = (guilds as any[]).map((g: any) => g.id);
+    return c.json({ ok: true, guildIds });
+  } catch (err: any) {
+    return c.json({ ok: false, error: err.message }, 500);
+  }
+});
+
 // Health check
 app.get("/health", (c) => c.json({ ok: true, status: "running" }));
 
@@ -46,17 +82,6 @@ const port = Number(process.env.API_PORT || 34002);
 
 serve({ fetch: app.fetch, port }, (info) => {
   console.log(`[API] Listening on http://localhost:${info.port}`);
-});
-
-// Start bot manager
-const clusterId = process.env.CLUSTER_ID || "default";
-startBotManager({ clusterId }).catch((err) => {
-  console.error("[BOT] Fatal:", err);
-});
-
-process.on("SIGINT", async () => {
-  await stopBotManager();
-  process.exit(0);
 });
 
 process.on("SIGTERM", async () => {

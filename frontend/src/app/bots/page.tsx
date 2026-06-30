@@ -85,7 +85,7 @@ export default function BotsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading bots...</div>
+        <div className="text-muted-foreground">Loading bots...</div>
       </div>
     );
   }
@@ -95,7 +95,7 @@ export default function BotsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Bots</h2>
-          <p className="text-gray-400">Manage your Discord/TS3 bots</p>
+          <p className="text-muted-foreground">Manage your Discord/TS3 bots</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={fetchBots}>
@@ -142,7 +142,7 @@ export default function BotsPage() {
       <div className="space-y-4">
         {bots.length === 0 ? (
           <Card>
-            <CardContent className="py-8 text-center text-gray-500">
+            <CardContent className="py-8 text-center text-muted-foreground">
               No bots configured. Click &quot;Add Bot&quot; to get started.
             </CardContent>
           </Card>
@@ -165,7 +165,7 @@ export default function BotsPage() {
                       {bot.status}
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Server: {bot.serverId} | ID: {bot.id}
                   </p>
                 </div>

@@ -1,7 +1,37 @@
+@import url("/vendor/fontawesome/css/fontawesome.css");
+@import url("/vendor/fontawesome/css/solid.css");
+@import url("/vendor/fontawesome/css/regular.css");
+@import url("/vendor/fontawesome/css/brands.css");
+@import url("/vendor/fontawesome/css/light.css");
 @import "tailwindcss";
 
 @theme {
-  --color-border: #262626;
+  --color-background: #030712;
+  --color-foreground: #fafafa;
+  --color-card: #0a0f1a;
+  --color-card-foreground: #fafafa;
+  --color-popover: #0a0f1a;
+  --color-popover-foreground: #fafafa;
+  --color-primary: #3b82f6;
+  --color-primary-foreground: #030712;
+  --color-secondary: #1f2937;
+  --color-secondary-foreground: #fafafa;
+  --color-muted: #1f2937;
+  --color-muted-foreground: #9ca3af;
+  --color-accent: #1f2937;
+  --color-accent-foreground: #fafafa;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #fafafa;
+  --color-border: #1f2937;
+  --color-input: #1f2937;
+  --color-ring: #3b82f6;
+  --color-success: #22c55e;
+  --color-success-foreground: #fafafa;
+  --color-warning: #eab308;
+  --color-warning-foreground: #030712;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
 }
 
 @layer base {
@@ -9,7 +39,7 @@
     border-color: var(--color-border);
   }
   body {
-    background-color: #030712;
-    color: white;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }

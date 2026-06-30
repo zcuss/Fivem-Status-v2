@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
+import { LogoutButton } from "@/components/LogoutButton";
+import { getSessionById } from "@/lib/session-store";
 import "./globals.css";
-import type { SessionData } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -10,22 +11,12 @@ export const metadata: Metadata = {
   description: "FiveM server management dashboard",
 };
 
-async function getSession(): Promise<SessionData | null> {
+async function getSession() {
   try {
     const cookieStore = await cookies();
-    const raw = cookieStore.get("fivem_session")?.value;
-    if (!raw) return null;
-
-    try {
-      const [base64] = raw.split(".");
-      if (!base64) return null;
-      const json = Buffer.from(base64, "base64url").toString("utf-8");
-      const session = JSON.parse(json) as SessionData;
-      if (Date.now() - session.iat > 7 * 24 * 60 * 60 * 1000) return null;
-      return session;
-    } catch {
-      return null;
-    }
+    const sessionId = cookieStore.get("fivem_session")?.value;
+    if (!sessionId) return null;
+    return getSessionById(sessionId);
   } catch {
     return null;
   }
@@ -39,72 +30,85 @@ export default async function RootLayout({
   const session = await getSession();
 
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-gray-950 text-gray-100 antialiased">
-        <nav className="border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a href="/" className="font-bold text-lg">
-              ⚡ Fivem-Status
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body
+        className="min-h-screen bg-background text-foreground antialiased"
+        suppressHydrationWarning
+      >
+        <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-14 items-center px-4">
+            <a
+              href="/"
+              className="mr-6 flex items-center space-x-2 font-semibold"
+            >
+              <span className="text-lg">⚡ Fivem-Status</span>
             </a>
-            <div className="flex items-center gap-6 text-sm text-gray-400">
-              {session ? (
-                <>
-                  <a
-                    href="/dashboard/bots"
-                    className="hover:text-white transition"
-                  >
-                    Bots
-                  </a>
-                  <a
-                    href="/dashboard/servers"
-                    className="hover:text-white transition"
-                  >
-                    Servers
-                  </a>
-                  <a
-                    href="/dashboard/logs"
-                    className="hover:text-white transition"
-                  >
-                    Logs
-                  </a>
-                  <div className="flex items-center gap-2 ml-2">
-                    {session.avatar ? (
-                      <img
-                        src={`https://cdn.discordapp.com/avatars/${session.userId}/${session.avatar}.png?size=32`}
-                        alt=""
-                        className="w-6 h-6 rounded-full"
-                      />
-                    ) : null}
-                    <span className="text-white text-xs">
-                      {session.globalName || session.username}
-                    </span>
-                    {session.role !== "user" && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-900/50 text-purple-300 uppercase font-medium">
-                        {session.role}
+            <div className="flex flex-1 items-center justify-between">
+              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                {session ? (
+                  <>
+                    <a
+                      href="/dashboard"
+                      className="transition-colors hover:text-foreground"
+                    >
+                      Dashboard
+                    </a>
+                    <a
+                      href="/bots"
+                      className="transition-colors hover:text-foreground"
+                    >
+                      Bots
+                    </a>
+                    <a
+                      href="/servers"
+                      className="transition-colors hover:text-foreground"
+                    >
+                      Servers
+                    </a>
+                    <a
+                      href="/logs"
+                      className="transition-colors hover:text-foreground"
+                    >
+                      Logs
+                    </a>
+                  </>
+                ) : null}
+              </div>
+              <div className="flex items-center gap-4">
+                {session ? (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      {session.avatar ? (
+                        <img
+                          src={`https://cdn.discordapp.com/avatars/${session.userId}/${session.avatar}.png?size=32`}
+                          alt=""
+                          className="h-6 w-6 rounded-full"
+                        />
+                      ) : null}
+                      <span className="text-sm font-medium">
+                        {session.globalName || session.username}
                       </span>
-                    )}
-                    <form action="/api/auth/logout" method="POST">
-                      <button
-                        type="submit"
-                        className="text-xs text-gray-500 hover:text-red-400 transition"
-                      >
-                        Logout
-                      </button>
-                    </form>
+                      {session.role !== "user" && (
+                        <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium uppercase text-primary">
+                          {session.role}
+                        </span>
+                      )}
+                    </div>
+                    <LogoutButton />
                   </div>
-                </>
-              ) : (
-                <a
-                  href="/api/auth/discord"
-                  className="text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-md text-xs font-medium transition"
-                >
-                  Login with Discord
-                </a>
-              )}
+                ) : (
+                  <a
+                    href="/api/auth/discord"
+                    className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+                  >
+                    Login with Discord
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </nav>
-        <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
+        <main className="flex-1">{children}</main>
       </body>
     </html>
   );

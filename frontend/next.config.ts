@@ -1,6 +1,10 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: [
+    'test.finder.zcus.dev',
+    'finder.zcus.dev',
+  ],
   async rewrites() {
     return [
       {

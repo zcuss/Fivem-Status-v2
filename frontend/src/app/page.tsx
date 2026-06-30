@@ -33,7 +33,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh]">
+    <div className="flex items-center justify-center min-h-[80vh] p-4">
       <Card className="w-full max-w-md text-center">
         <CardHeader>
           <CardTitle className="text-3xl">⚡ Fivem-Status</CardTitle>
@@ -44,7 +44,7 @@ export default async function HomePage() {
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
           <a href="/api/auth/discord">
-            <button className="inline-flex items-center justify-center gap-2 rounded-md bg-indigo-600 px-6 py-3 text-sm font-medium text-white hover:bg-indigo-700 transition">
+            <button className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition">
               <svg
                 viewBox="0 0 24 24"
                 className="w-5 h-5"

@@ -20,19 +20,19 @@ function DocContent({ section }: { section: DocSection }) {
       return (
         <div className="prose prose-invert max-w-none space-y-4">
           <h3 className="text-xl font-bold text-white">Fivem-Status — Developer Docs</h3>
-          <p className="text-gray-300">
+          <p className="text-foreground">
             Fivem-Status provides a bot management system, server monitoring, and webhook-based notifications
-            for FiveM game servers. The backend API runs on port <code className="rounded bg-gray-800 px-1.5 py-0.5 text-sm text-green-400">34002</code>.
+            for FiveM game servers. The backend API runs on port <code className="rounded bg-secondary px-1.5 py-0.5 text-sm text-green-400">34002</code>.
           </p>
           <h4 className="text-lg font-semibold text-white mt-6">Architecture</h4>
-          <ul className="list-disc list-inside text-gray-300 space-y-1">
-            <li><strong>Backend API</strong> — Node.js/Express server at <code className="rounded bg-gray-800 px-1.5 py-0.5 text-sm text-green-400">api.finder.zcus.dev</code></li>
+          <ul className="list-disc list-inside text-foreground space-y-1">
+            <li><strong>Backend API</strong> — Node.js/Express server at <code className="rounded bg-secondary px-1.5 py-0.5 text-sm text-green-400">api.finder.zcus.dev</code></li>
             <li><strong>Dashboard</strong> — Next.js frontend (this app)</li>
             <li><strong>Bot Runner</strong> — Child process manager for Discord/TS3 bots</li>
-            <li><strong>Database</strong> — SQLite via <code className="rounded bg-gray-800 px-1.5 py-0.5 text-sm text-green-400">@fivem/db</code></li>
+            <li><strong>Database</strong> — SQLite via <code className="rounded bg-secondary px-1.5 py-0.5 text-sm text-green-400">@fivem/db</code></li>
           </ul>
           <h4 className="text-lg font-semibold text-white mt-6">Quick Start</h4>
-          <pre className="rounded-lg bg-gray-950 border border-gray-800 p-4 text-sm text-gray-300 overflow-x-auto">{`# Start backend
+          <pre className="rounded-lg bg-background border border-border p-4 text-sm text-foreground overflow-x-auto">{`# Start backend
 cd backend && npm run start
 
 # Start dashboard
@@ -46,52 +46,52 @@ cd dashboard && npm run dev
       return (
         <div className="prose prose-invert max-w-none space-y-4">
           <h3 className="text-xl font-bold text-white">Bot API Reference</h3>
-          <p className="text-gray-300">Endpoints for managing bot instances.</p>
+          <p className="text-foreground">Endpoints for managing bot instances.</p>
 
           <div className="space-y-6">
-            <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="rounded bg-green-600 px-2 py-0.5 text-xs font-bold text-white">GET</span>
                 <code className="text-sm text-green-400">/api/bots</code>
               </div>
-              <p className="text-sm text-gray-400">List all registered bots.</p>
+              <p className="text-sm text-muted-foreground">List all registered bots.</p>
             </div>
 
-            <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="rounded bg-blue-600 px-2 py-0.5 text-xs font-bold text-white">POST</span>
                 <code className="text-sm text-blue-400">/api/bots</code>
               </div>
-              <p className="text-sm text-gray-400">Register a new bot.</p>
-              <pre className="mt-2 rounded bg-gray-900 p-2 text-xs text-gray-300">{`{
+              <p className="text-sm text-muted-foreground">Register a new bot.</p>
+              <pre className="mt-2 rounded bg-card p-2 text-xs text-foreground">{`{
   "name": "My Bot",
   "serverId": "guild-id",
   "token": "discord-bot-token"
 }`}</pre>
             </div>
 
-            <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="rounded bg-blue-600 px-2 py-0.5 text-xs font-bold text-white">POST</span>
                 <code className="text-sm text-blue-400">/api/bots/:id/start</code>
               </div>
-              <p className="text-sm text-gray-400">Start a bot process.</p>
+              <p className="text-sm text-muted-foreground">Start a bot process.</p>
             </div>
 
-            <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="rounded bg-blue-600 px-2 py-0.5 text-xs font-bold text-white">POST</span>
                 <code className="text-sm text-blue-400">/api/bots/:id/stop</code>
               </div>
-              <p className="text-sm text-gray-400">Stop a running bot process.</p>
+              <p className="text-sm text-muted-foreground">Stop a running bot process.</p>
             </div>
 
-            <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="rounded bg-red-600 px-2 py-0.5 text-xs font-bold text-white">DELETE</span>
                 <code className="text-sm text-red-400">/api/bots/:id</code>
               </div>
-              <p className="text-sm text-gray-400">Remove a bot registration and stop its process.</p>
+              <p className="text-sm text-muted-foreground">Remove a bot registration and stop its process.</p>
             </div>
           </div>
         </div>
@@ -101,20 +101,20 @@ cd dashboard && npm run dev
       return (
         <div className="prose prose-invert max-w-none space-y-4">
           <h3 className="text-xl font-bold text-white">Webhook Configuration</h3>
-          <p className="text-gray-300">
+          <p className="text-foreground">
             Webhooks are used to send notifications to Discord channels when server status changes.
           </p>
 
           <h4 className="text-lg font-semibold text-white mt-6">Setup</h4>
-          <ol className="list-decimal list-inside text-gray-300 space-y-1">
+          <ol className="list-decimal list-inside text-foreground space-y-1">
             <li>Create a Discord webhook in your server settings</li>
             <li>Add the webhook URL to your bot configuration</li>
             <li>Configure which events trigger notifications</li>
           </ol>
 
           <h4 className="text-lg font-semibold text-white mt-6">Event Types</h4>
-          <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
-            <pre className="text-sm text-gray-300">{`{
+          <div className="rounded-lg border border-border bg-background p-4">
+            <pre className="text-sm text-foreground">{`{
   "webhook_url": "https://discord.com/api/webhooks/...",
   "events": {
     "server_online": true,
@@ -128,19 +128,19 @@ cd dashboard && npm run dev
           </div>
 
           <h4 className="text-lg font-semibold text-white mt-6">API</h4>
-          <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
+          <div className="rounded-lg border border-border bg-background p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="rounded bg-green-600 px-2 py-0.5 text-xs font-bold text-white">GET</span>
               <code className="text-sm text-green-400">/api/webhooks</code>
             </div>
-            <p className="text-sm text-gray-400">List all webhook configurations.</p>
+            <p className="text-sm text-muted-foreground">List all webhook configurations.</p>
           </div>
-          <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
+          <div className="rounded-lg border border-border bg-background p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="rounded bg-blue-600 px-2 py-0.5 text-xs font-bold text-white">PUT</span>
               <code className="text-sm text-blue-400">/api/webhooks/:botId</code>
             </div>
-            <p className="text-sm text-gray-400">Update webhook config for a bot.</p>
+            <p className="text-sm text-muted-foreground">Update webhook config for a bot.</p>
           </div>
         </div>
       );
@@ -149,10 +149,10 @@ cd dashboard && npm run dev
       return (
         <div className="prose prose-invert max-w-none space-y-4">
           <h3 className="text-xl font-bold text-white">Configuration Reference</h3>
-          <p className="text-gray-300">Complete configuration options for Fivem-Status.</p>
+          <p className="text-foreground">Complete configuration options for Fivem-Status.</p>
 
-          <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
-            <pre className="text-sm text-gray-300 overflow-x-auto">{`{
+          <div className="rounded-lg border border-border bg-background p-4">
+            <pre className="text-sm text-foreground overflow-x-auto">{`{
   "port": 34002,
   "db_path": "./data/fivem-status.db",
   "log_level": "info",
@@ -188,8 +188,8 @@ cd dashboard && npm run dev
           </div>
 
           <h4 className="text-lg font-semibold text-white mt-6">Environment Variables</h4>
-          <div className="rounded-lg border border-gray-800 bg-gray-950 p-4">
-            <pre className="text-sm text-gray-300 overflow-x-auto">{`PORT=34002
+          <div className="rounded-lg border border-border bg-background p-4">
+            <pre className="text-sm text-foreground overflow-x-auto">{`PORT=34002
 DB_PATH=./data/fivem-status.db
 DISCORD_TOKEN=your-bot-token
 MIDTRANS_SERVER_KEY=your-server-key
@@ -210,7 +210,7 @@ export default function DevDocsPage() {
           <BookOpen className="h-8 w-8" />
           Developer Docs
         </h2>
-        <p className="text-gray-400">API reference, webhooks, and configuration</p>
+        <p className="text-muted-foreground">API reference, webhooks, and configuration</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

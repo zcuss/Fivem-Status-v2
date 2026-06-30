@@ -22,20 +22,20 @@ bots.post("/", async (c) => {
     return c.json({ ok: false, error: "name, token, clientId are required" }, 400);
   }
 
-  const [result] = await db.execute(
+  const [created]: any = await db.execute(
     `INSERT INTO bot_configs (name, token, client_id, enabled, cluster_id, features, status, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, 'stopped', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+     VALUES ($1, $2, $3, $4, $5, $6, 'stopped', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+     RETURNING *`,
     [name, token, clientId, enabled ? 1 : 0, clusterId || null, features || "commands,refresh,voice"]
   );
-
-  const [created] = await db.execute("SELECT * FROM bot_configs WHERE id = ?", [result.insertId]);
-  return c.json({ ok: true, data: created[0] }, 201);
+  const row = created?.rows?.[0] || created?.[0];
+  return c.json({ ok: true, data: row }, 201);
 });
 
 // DELETE /api/bots/:id — delete a bot config
 bots.delete("/:id", async (c) => {
   const id = Number(c.req.param("id"));
-  await db.execute("DELETE FROM bot_configs WHERE id = ?", [id]);
+  await db.execute("DELETE FROM bot_configs WHERE id = $1", [id]);
   return c.json({ ok: true, message: "Bot deleted" });
 });
 
@@ -43,10 +43,10 @@ bots.delete("/:id", async (c) => {
 bots.post("/:id/start", async (c) => {
   const id = Number(c.req.param("id"));
   await db.execute(
-    "UPDATE bot_configs SET status = 'running', enabled = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    "UPDATE bot_configs SET status = 'running', enabled = 1, updated_at = CURRENT_TIMESTAMP WHERE id = $1",
     [id]
   );
-  const [rows] = await db.execute("SELECT * FROM bot_configs WHERE id = ?", [id]);
+  const [rows] = await db.execute("SELECT * FROM bot_configs WHERE id = $1", [id]);
   if (!rows[0]) return c.json({ ok: false, error: "Bot not found" }, 404);
   return c.json({ ok: true, data: rows[0] });
 });
@@ -55,10 +55,10 @@ bots.post("/:id/start", async (c) => {
 bots.post("/:id/stop", async (c) => {
   const id = Number(c.req.param("id"));
   await db.execute(
-    "UPDATE bot_configs SET status = 'stopped', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    "UPDATE bot_configs SET status = 'stopped', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
     [id]
   );
-  const [rows] = await db.execute("SELECT * FROM bot_configs WHERE id = ?", [id]);
+  const [rows] = await db.execute("SELECT * FROM bot_configs WHERE id = $1", [id]);
   if (!rows[0]) return c.json({ ok: false, error: "Bot not found" }, 404);
   return c.json({ ok: true, data: rows[0] });
 });

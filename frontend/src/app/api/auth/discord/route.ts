@@ -1,16 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const clientId = process.env.DISCORD_CLIENT_ID;
-  const callbackUrl = process.env.DISCORD_CALLBACK_URL;
-
-  if (!clientId || !callbackUrl) {
+  if (!clientId) {
     return NextResponse.json(
       { error: "Discord OAuth not configured" },
       { status: 500 }
     );
   }
+
+  // Derive callback URL from request Host header (matches user's domain)
+  const host = req.headers.get("host") || "test.finder.zcus.dev";
+  const protocol = req.headers.get("x-forwarded-proto") || "https";
+  const callbackUrl = `${protocol}://${host}/api/auth/callback`;
 
   // Generate CSRF state
   const state = crypto.randomBytes(32).toString("hex");

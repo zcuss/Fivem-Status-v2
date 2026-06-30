@@ -66,7 +66,7 @@ export default function LogsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Logs</h2>
-          <p className="text-gray-400">View system and server logs</p>
+          <p className="text-muted-foreground">View system and server logs</p>
         </div>
         <Button variant="outline" size="sm" onClick={fetchLogs}>
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh
@@ -75,7 +75,7 @@ export default function LogsPage() {
 
       <div className="flex gap-4 items-center">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search logs..."
             value={filter}
@@ -99,32 +99,32 @@ export default function LogsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium text-gray-400">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
             {filteredLogs.length} log entries
           </CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="py-8 text-center text-gray-500">Loading logs...</div>
+            <div className="py-8 text-center text-muted-foreground">Loading logs...</div>
           ) : filteredLogs.length === 0 ? (
-            <div className="py-8 text-center text-gray-500">No logs found</div>
+            <div className="py-8 text-center text-muted-foreground">No logs found</div>
           ) : (
             <div className="space-y-1 font-mono text-sm">
               {filteredLogs.map((log) => (
                 <div
                   key={log.id}
-                  className="flex items-start gap-3 rounded px-3 py-2 hover:bg-gray-800/50"
+                  className="flex items-start gap-3 rounded px-3 py-2 hover:bg-secondary/50"
                 >
                   <Badge variant={getLevelColor(log.level)} className="shrink-0 mt-0.5">
                     {log.level}
                   </Badge>
-                  <span className="text-gray-500 shrink-0 w-44">
+                  <span className="text-muted-foreground shrink-0 w-44">
                     {new Date(log.timestamp).toLocaleString()}
                   </span>
                   {log.source && (
                     <span className="text-blue-400 shrink-0">{log.source}</span>
                   )}
-                  <span className="text-gray-300 break-all">{log.message}</span>
+                  <span className="text-foreground break-all">{log.message}</span>
                 </div>
               ))}
             </div>
@@ -141,7 +141,7 @@ export default function LogsPage() {
         >
           <ChevronLeft className="mr-1 h-4 w-4" /> Previous
         </Button>
-        <span className="text-sm text-gray-500">Page {page + 1}</span>
+        <span className="text-sm text-muted-foreground">Page {page + 1}</span>
         <Button
           variant="outline"
           size="sm"

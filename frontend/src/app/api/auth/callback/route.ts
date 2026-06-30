@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
-import { resolveRole, upsertUserRole } from "@/lib/auth";
-import type { SessionData, DiscordGuild } from "@/lib/auth";
+import { resolveRole, upsertUserRole, setSessionCookie } from "@/lib/auth";
+import type { SessionData, DiscordGuild } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,24 +27,29 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get("code");
   const state = searchParams.get("state");
 
+  // Derive base URL from request Host header
+  const host = req.headers.get("host") || "test.finder.zcus.dev";
+  const protocol = req.headers.get("x-forwarded-proto") || "https";
+  const baseUrl = `${protocol}://${host}`;
+  const callbackUrl = `${baseUrl}/api/auth/callback`;
+
   // Validate
   if (!code) {
-    return NextResponse.redirect(new URL("/?error=no_code", req.url));
+    return NextResponse.redirect(new URL("/?error=no_code", baseUrl));
   }
 
   // CSRF check
   const savedState = req.cookies.get("oauth_state")?.value;
   if (!savedState || savedState !== state) {
-    return NextResponse.redirect(new URL("/?error=invalid_state", req.url));
+    return NextResponse.redirect(new URL("/?error=invalid_state", baseUrl));
   }
 
   const clientId = process.env.DISCORD_CLIENT_ID;
   const clientSecret = process.env.DISCORD_CLIENT_SECRET;
-  const callbackUrl = process.env.DISCORD_CALLBACK_URL;
 
-  if (!clientId || !clientSecret || !callbackUrl) {
+  if (!clientId || !clientSecret) {
     return NextResponse.redirect(
-      new URL("/?error=oauth_not_configured", req.url)
+      new URL("/?error=oauth_not_configured", baseUrl)
     );
   }
 
@@ -64,7 +68,9 @@ export async function GET(req: NextRequest) {
     });
 
     if (!tokenRes.ok) {
-      return NextResponse.redirect(new URL("/?error=token_exchange_failed", req.url));
+      const errBody = await tokenRes.text();
+      console.error("[AUTH] Token exchange failed:", tokenRes.status, errBody);
+      return NextResponse.redirect(new URL("/?error=token_exchange_failed", baseUrl));
     }
 
     const tokenData = await tokenRes.json();
@@ -81,7 +87,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     if (!userRes.ok) {
-      return NextResponse.redirect(new URL("/?error=user_fetch_failed", req.url));
+      return NextResponse.redirect(new URL("/?error=user_fetch_failed", baseUrl));
     }
 
     const user: DiscordUser = await userRes.json();
@@ -102,7 +108,7 @@ export async function GET(req: NextRequest) {
     // Upsert user_roles
     await upsertUserRole(user.id, user.username, user.global_name, role);
 
-    // Build session
+    // Build session — server-side store, size doesn't matter anymore
     const session: SessionData = {
       userId: user.id,
       username: user.username,
@@ -113,24 +119,19 @@ export async function GET(req: NextRequest) {
       iat: Date.now(),
     };
 
-    // Set cookie + redirect via HTML (Set-Cookie headers get stripped on redirects in edge)
-    const encoded = (() => {
-      const json = JSON.stringify(session);
-      const b64 = Buffer.from(json).toString("base64url");
-      const sig = createHmac("sha256", process.env.SESSION_SECRET || "").update(b64).digest("hex");
-      return `${b64}.${sig}`;
-    })();
+    // Create server-side session, get Set-Cookie header
+    const cookieHeader = setSessionCookie(session);
+    if (!cookieHeader) {
+      return NextResponse.redirect(new URL("/?error=session_failed", baseUrl));
+    }
 
-    const html = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=/dashboard"></head><body></body></html>`;
-    const response = new NextResponse(html, { status: 200, headers: { "Content-Type": "text/html" } });
-    response.headers.append(
-      "Set-Cookie",
-      `fivem_session=${encoded}; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=${60 * 60 * 24 * 7}`
-    );
+    // 307 redirect to dashboard with session cookie
+    const response = NextResponse.redirect(new URL("/dashboard", baseUrl), 307);
+    response.headers.append("Set-Cookie", cookieHeader);
     response.headers.append("Set-Cookie", "oauth_state=; Path=/; Max-Age=0");
     return response;
   } catch (err) {
-    console.error("Discord OAuth callback error:", err);
-    return NextResponse.redirect(new URL("/?error=callback_exception", req.url));
+    console.error("[AUTH] Discord OAuth callback error:", err);
+    return NextResponse.redirect(new URL("/?error=callback_exception", baseUrl));
   }
 }

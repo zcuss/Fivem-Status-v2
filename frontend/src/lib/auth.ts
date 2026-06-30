@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import type { SessionData, DiscordGuild } from "./types";
+import { createSession, getSessionById, deleteSession } from "./session-store";
 export type { SessionData, DiscordGuild };
 
 // ============================================================
@@ -13,76 +14,30 @@ const DEV_DISCORD_IDS = (process.env.DEV_DISCORD_IDS || "")
   .split(",")
   .filter(Boolean);
 
-function getSessionSecret(): string {
-  const secret = process.env.SESSION_SECRET;
-  if (!secret) throw new Error("SESSION_SECRET env not set");
-  return secret;
-}
-
 // ============================================================
-// Signing helpers
-// ============================================================
-
-function sign(payload: string): string {
-  const hmac = crypto.createHmac("sha256", getSessionSecret());
-  hmac.update(payload);
-  return hmac.digest("hex");
-}
-
-function encodeSession(session: SessionData): string {
-  const json = JSON.stringify(session);
-  const base64 = Buffer.from(json).toString("base64url");
-  const signature = sign(base64);
-  return `${base64}.${signature}`;
-}
-
-function decodeSession(cookie: string): SessionData | null {
-  const [base64, signature] = cookie.split(".");
-  if (!base64 || !signature) return null;
-
-  const expected = sign(base64);
-  // Constant-time compare
-  if (!crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expected, "hex"))) {
-    return null;
-  }
-
-  try {
-    const json = Buffer.from(base64, "base64url").toString("utf-8");
-    return JSON.parse(json) as SessionData;
-  } catch {
-    return null;
-  }
-}
-
-// ============================================================
-// Public API
+// Server-side session API (file-based, like old Express-session)
 // ============================================================
 
 /**
- * Read session from cookie (server component / route handler).
- * Returns null if not authenticated or session expired/invalid.
+ * Read session from server-side store via session_id cookie.
+ * Cookie is tiny (UUID ~32 chars). All data lives on disk.
  */
 export async function getSession(): Promise<SessionData | null> {
   const cookieStore = await cookies();
-  const raw = cookieStore.get(SESSION_COOKIE)?.value;
-  if (!raw) return null;
-
-  const session = decodeSession(raw);
-  if (!session) return null;
-
-  // Expired?
-  if (Date.now() - session.iat > SESSION_MAX_AGE_MS) return null;
-
-  return session;
+  const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!sessionId) return null;
+  return getSessionById(sessionId);
 }
 
 /**
- * Set session cookie (called after OAuth callback).
+ * Create server-side session, return Set-Cookie header value.
+ * Cookie holds only session_id — tiny, always under 4KB.
  */
 export function setSessionCookie(session: SessionData): string {
-  const encoded = encodeSession(session);
+  const sessionId = createSession(session);
+  if (!sessionId) return "";
   return [
-    `${SESSION_COOKIE}=${encoded}`,
+    `${SESSION_COOKIE}=${sessionId}`,
     "Path=/",
     "HttpOnly",
     "SameSite=Lax",
@@ -94,16 +49,16 @@ export function setSessionCookie(session: SessionData): string {
 }
 
 /**
- * Clear session cookie (logout).
+ * Clear session (delete from store + clear cookie).
  */
 export function clearSessionCookie(): string {
   return `${SESSION_COOKIE}=; Path=/; HttpOnly; Max-Age=0`;
 }
 
-/**
- * Get session or throw → redirect to login.
- * Use in API route handlers / server actions.
- */
+// ============================================================
+// Auth helpers
+// ============================================================
+
 export async function requireAuth(): Promise<SessionData> {
   const session = await getSession();
   if (!session) {
@@ -112,9 +67,6 @@ export async function requireAuth(): Promise<SessionData> {
   return session;
 }
 
-/**
- * Get session or throw → redirect + check admin/dev role.
- */
 export async function requireAdmin(): Promise<SessionData> {
   const session = await requireAuth();
   if (session.role === "user") {
@@ -136,33 +88,18 @@ export class AuthError extends Error {
 
 const ADMIN_PERMISSION = 0x8; // Discord ADMINISTRATOR
 
-/**
- * Determine effective role for a user.
- * 1. DEV_DISCORD_IDS match → "dev"
- * 2. Guild owner in any guild → "admin"
- * 3. Guild member with ADMINISTRATOR permission → "admin"
- * 4. DB user_roles table → stored role (fallback "user")
- */
 export function resolveRole(
   discordId: string,
   guilds: DiscordGuild[]
 ): "user" | "admin" | "dev" {
-  // Developer override
   if (DEV_DISCORD_IDS.includes(discordId)) return "dev";
-
-  // Guild-based admin checks
   for (const guild of guilds) {
     if (guild.owner) return "admin";
     if (guild.permissions & ADMIN_PERMISSION) return "admin";
   }
-
   return "user";
 }
 
-/**
- * Upsert user_roles record after login.
- * Preserves existing role unless resolved role is higher.
- */
 export async function upsertUserRole(
   discordId: string,
   username: string,

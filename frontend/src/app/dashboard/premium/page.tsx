@@ -88,7 +88,7 @@ export default function PremiumPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading plan status...</div>
+        <div className="text-muted-foreground">Loading plan status...</div>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function PremiumPage() {
             <Crown className="h-8 w-8 text-yellow-500" />
             Premium
           </h2>
-          <p className="text-gray-400">
+          <p className="text-muted-foreground">
             Current plan:{' '}
             <Badge variant={currentPlan === 'free' ? 'secondary' : currentPlan === 'pro' ? 'success' : 'warning'}>
               {currentPlan}
@@ -124,7 +124,7 @@ export default function PremiumPage() {
                 </div>
               )}
               <CardHeader className="text-center pt-8">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-gray-300">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-foreground">
                   {plan.icon}
                 </div>
                 <CardTitle className="text-2xl">{plan.name}</CardTitle>
@@ -134,31 +134,31 @@ export default function PremiumPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <ul className="space-y-3 text-sm">
-                  <li className="flex items-center gap-2 text-gray-300">
+                  <li className="flex items-center gap-2 text-foreground">
                     <Check className="h-4 w-4 text-green-500 shrink-0" />
                     {plan.max_bots >= 999 ? 'Unlimited' : plan.max_bots} bots
                   </li>
-                  <li className="flex items-center gap-2 text-gray-300">
+                  <li className="flex items-center gap-2 text-foreground">
                     <Check className="h-4 w-4 text-green-500 shrink-0" />
                     {plan.max_auto.toLocaleString()} auto queries
                   </li>
-                  <li className="flex items-center gap-2 text-gray-300">
+                  <li className="flex items-center gap-2 text-foreground">
                     <Check className="h-4 w-4 text-green-500 shrink-0" />
                     {plan.name === 'Free' ? 'Community support' : 'Priority support'}
                   </li>
                   {plan.name !== 'Free' && (
-                    <li className="flex items-center gap-2 text-gray-300">
+                    <li className="flex items-center gap-2 text-foreground">
                       <Check className="h-4 w-4 text-green-500 shrink-0" />
                       Webhook notifications
                     </li>
                   )}
                   {plan.name === 'Enterprise' && (
                     <>
-                      <li className="flex items-center gap-2 text-gray-300">
+                      <li className="flex items-center gap-2 text-foreground">
                         <Check className="h-4 w-4 text-green-500 shrink-0" />
                         Custom bot branding
                       </li>
-                      <li className="flex items-center gap-2 text-gray-300">
+                      <li className="flex items-center gap-2 text-foreground">
                         <Check className="h-4 w-4 text-green-500 shrink-0" />
                         API access
                       </li>
@@ -180,7 +180,7 @@ export default function PremiumPage() {
       </div>
 
       <Card>
-        <CardContent className="py-6 text-center text-gray-500 text-sm">
+        <CardContent className="py-6 text-center text-muted-foreground text-sm">
           Payments are processed securely via Midtrans. Cancel anytime.
         </CardContent>
       </Card>

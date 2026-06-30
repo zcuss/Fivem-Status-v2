@@ -3,7 +3,7 @@ export interface SessionData {
   username: string;
   avatar: string | null;
   globalName: string | null;
-  guilds: DiscordGuild[];
+  guilds?: DiscordGuild[];
   role: "user" | "admin" | "dev";
   iat: number;
 }

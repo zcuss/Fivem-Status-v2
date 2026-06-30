@@ -69,7 +69,7 @@ export default function ServersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading servers...</div>
+        <div className="text-muted-foreground">Loading servers...</div>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export default function ServersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Servers</h2>
-          <p className="text-gray-400">Manage FiveM game servers</p>
+          <p className="text-muted-foreground">Manage FiveM game servers</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={fetchServers}>
@@ -126,7 +126,7 @@ export default function ServersPage() {
       <div className="space-y-4">
         {servers.length === 0 ? (
           <Card>
-            <CardContent className="py-8 text-center text-gray-500">
+            <CardContent className="py-8 text-center text-muted-foreground">
               No servers configured. Click &quot;Add Server&quot; to get started.
             </CardContent>
           </Card>
@@ -136,7 +136,7 @@ export default function ServersPage() {
               <CardContent className="flex items-center justify-between p-6">
                 <div className="space-y-1">
                   <div className="flex items-center gap-3">
-                    <Globe className="h-5 w-5 text-gray-400" />
+                    <Globe className="h-5 w-5 text-muted-foreground" />
                     <h3 className="font-semibold text-lg">{server.name}</h3>
                     <Badge
                       variant={
@@ -150,7 +150,7 @@ export default function ServersPage() {
                       {server.status}
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {server.address}:{server.port} | Players: {server.players}/{server.maxPlayers}
                   </p>
                 </div>

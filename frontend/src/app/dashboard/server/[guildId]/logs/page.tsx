@@ -105,6 +105,34 @@ export default function LogsPage() {
     }
   };
 
+  const clearModeration = async () => {
+    if (!confirm("Clear ALL moderation logs? This cannot be undone.")) return;
+    try {
+      await fetch(`${API}/api/logs/moderation/clear`, { method: "POST" });
+      setLogs([]);
+    } catch (e) {
+      console.error("Failed to clear moderation logs:", e);
+    }
+  };
+
+  const exportCSV = () => {
+    if (!filteredLogs.length) return;
+    const escape = (v: any) => '"' + String(v || "").replace(/"/g, '""') + '"';
+    const headers = ["Timestamp", "Type", "User", "Command", "Action", "Details"];
+    const rows = filteredLogs.map((r) => [
+      r.timestamp, r.type, r.user || r.user_id || "", r.command || "", r.action || "", r.details || "",
+    ]);
+    const csvLines = [headers.join(","), ...rows.map((row) => row.map(escape).join(","))];
+    const csv = csvLines.join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "logs-export.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Logs</h1>
@@ -167,8 +195,20 @@ export default function LogsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">{typeLabels[logType]}</CardTitle>
-          <CardDescription>
-            {filteredLogs.length} entries on page {page} of {totalPages}
+          <CardDescription className="flex items-center justify-between">
+            <span>{filteredLogs.length} entries on page {page} of {totalPages}</span>
+            <div className="flex gap-2">
+              {filteredLogs.length > 0 && (
+                <Button variant="outline" size="sm" className="text-xs h-7" onClick={exportCSV}>
+                  <i className="fa-solid fa-download mr-1" /> Export CSV
+                </Button>
+              )}
+              {logType === "moderation" && filteredLogs.length > 0 && (
+                <Button variant="destructive" size="sm" className="text-xs h-7" onClick={clearModeration}>
+                  <i className="fa-solid fa-trash mr-1" /> Clear All
+                </Button>
+              )}
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent>
